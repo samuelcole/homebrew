@@ -10,12 +10,15 @@ class Xpdf <Formula
       "ftp://ftp.foolabs.com/pub/xpdf/xpdf-3.02pl1.patch",
       "ftp://ftp.foolabs.com/pub/xpdf/xpdf-3.02pl2.patch",
       "ftp://ftp.foolabs.com/pub/xpdf/xpdf-3.02pl3.patch",
-      "ftp://ftp.foolabs.com/pub/xpdf/xpdf-3.02pl4.patch"
+      "ftp://ftp.foolabs.com/pub/xpdf/xpdf-3.02pl4.patch",
+      "ftp://ftp.foolabs.com/pub/xpdf/xpdf-3.02pl5.patch"
     ]
   end
 
   def install
-    system "./configure", "--prefix=#{prefix}", "--disable-debug", "--disable-dependency-tracking"
+    system "./configure", "--disable-debug", "--disable-dependency-tracking",
+                          "--prefix=#{prefix}",
+                          "--mandir=#{man}"
     system "make"
     system "make install"
   end

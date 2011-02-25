@@ -13,10 +13,18 @@ class Recode <Formula
   end
 
   def install
-    cp "/usr/share/libtool/config/config.guess", "."
-    cp "/usr/share/libtool/config/config.sub", "."
+    if MACOS_VERSION >= 10.6
+      libtool_config = "/usr/share/libtool/config"
+    else
+      libtool_config = "/usr/share/libtool"
+    end
+
+    cp "#{libtool_config}/config.guess", "."
+    cp "#{libtool_config}/config.sub", "."
+
     system "./configure", "--disable-debug", "--disable-dependency-tracking",
                           "--without-included-gettext",
+                          "--infodir=#{info}",
                           "--prefix=#{prefix}",
                           "--mandir=#{man}"
     system "make install"

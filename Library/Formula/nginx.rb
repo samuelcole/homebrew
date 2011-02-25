@@ -1,14 +1,14 @@
 require 'formula'
 
 class Nginx < Formula
-  url 'http://nginx.org/download/nginx-0.7.67.tar.gz'
-  head 'http://nginx.org/download/nginx-0.8.50.tar.gz'
+  url 'http://nginx.org/download/nginx-0.8.54.tar.gz'
+  head 'http://nginx.org/download/nginx-0.9.5.tar.gz'
   homepage 'http://nginx.org/'
 
-  unless ARGV.build_head?
-    md5 'b6e175f969d03a4d3c5643aaabc6a5ff'
+  if ARGV.build_head?
+    @md5='955960482bf55b537ad0db5cca8fd61a'
   else
-    md5 'c730e35c9b14c6a19ff502c9082d1567'
+    @md5='44df4eb6a22d725021288c570789046f'
   end
 
   depends_on 'pcre'
@@ -23,7 +23,8 @@ class Nginx < Formula
 
   def options
     [
-      ['--with-passenger', "Compile with support for Phusion Passenger module"]
+      ['--with-passenger', "Compile with support for Phusion Passenger module"],
+      ['--with-webdav',    "Compile with support for WebDAV module"]
     ]
   end
 
@@ -45,6 +46,7 @@ class Nginx < Formula
             "--conf-path=#{etc}/nginx/nginx.conf", "--pid-path=#{var}/run/nginx.pid",
             "--lock-path=#{var}/nginx/nginx.lock"]
     args << passenger_config_args if ARGV.include? '--with-passenger'
+    args << "--with-http_dav_module" if ARGV.include? '--with-webdav'
 
     system "./configure", *args
     system "make install"
@@ -102,7 +104,7 @@ __END__
 @@ -155,6 +155,22 @@ else
              . auto/feature
          fi
- 
+
 +        if [ $ngx_found = no ]; then
 +
 +            # Homebrew

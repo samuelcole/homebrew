@@ -2,8 +2,8 @@ require 'formula'
 
 class Mysql <Formula
   homepage 'http://dev.mysql.com/doc/refman/5.1/en/'
-  url 'http://mysql.llarian.net/Downloads/MySQL-5.1/mysql-5.1.49.tar.gz'
-  md5 'a90d87a71fa3c23dff6d78afc8e3184c'
+  url 'http://mysql.mirrors.pair.com/Downloads/MySQL-5.1/mysql-5.1.55.tar.gz'
+  md5 'e07e79edad557874d0870c914c9c81e1'
 
   depends_on 'readline'
 
@@ -11,8 +11,10 @@ class Mysql <Formula
     [
       ['--with-tests', "Keep tests when installing."],
       ['--with-bench', "Keep benchmark app when installing."],
+      ['--with-embedded', "Build the embedded server."],
       ['--client-only', "Only install client tools, not the server."],
-      ['--universal', "Make mysql a universal binary"]
+      ['--universal', "Make mysql a universal binary"],
+      ['--with-utf8-default', "Set the default character set to utf8"]
     ]
   end
 
@@ -21,7 +23,7 @@ class Mysql <Formula
   end
 
   def install
-    fails_with_llvm "http://github.com/mxcl/homebrew/issues/issue/144"
+    fails_with_llvm "https://github.com/mxcl/homebrew/issues/issue/144"
 
     # See: http://dev.mysql.com/doc/refman/5.1/en/configure-options.html
     # These flags may not apply to gcc 4+
@@ -45,9 +47,12 @@ class Mysql <Formula
       "--enable-assembler",
       "--enable-thread-safe-client",
       "--enable-local-infile",
-      "--enable-shared"]
+      "--enable-shared",
+      "--with-partition"]
 
     configure_args << "--without-server" if ARGV.include? '--client-only'
+    configure_args << "--with-embedded-server" if ARGV.include? '--with-embedded'
+    configure_args << "--with-charset=utf8" if ARGV.include? '--with-utf8-default'
 
     system "./configure", *configure_args
     system "make install"
@@ -63,6 +68,7 @@ class Mysql <Formula
 
   def caveats; <<-EOS.undent
     Set up databases with:
+        unset TMPDIR
         mysql_install_db
 
     If this is your first install, automatically load on login with:
